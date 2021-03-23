@@ -4,31 +4,24 @@ import json
 import pandas
 
 def process(m):
-    test = []
+    processed = [] #initiate new array
     for i in range(len(m) - 1):
-        test.append(m[i].split(','))
-    df = pandas.DataFrame(test, columns =["id","vendor_id","pickup_datetime","dropoff_datetime","passenger_count","pickup_longitude","pickup_latitude","dropoff_longitude","dropoff_latitude","store_and_fwd_flag","trip_duration"])
-    # # print("\n")
+        processed.append(m[i].split(',')) #for each of the items, push them to the processed array (incoming tuple is immutable)
+
+    df = pandas.DataFrame(processed, columns =["id","vendor_id","pickup_datetime","dropoff_datetime","passenger_count","pickup_longitude","pickup_latitude","dropoff_longitude","dropoff_latitude","store_and_fwd_flag","trip_duration"])
     result = df.to_json(orient="records")
     parsed = json.loads(result)
+
+    # convert the array to json. Here we must send the data to the mappers
     print(parsed[0])
-    # send data to mappers 
-    # data = json.dumps(m)
-    # sd = json.loads(data)
-    # print(sd) #paizei gamo to xristo m
-    # print("\n")
+    
 
-n = 100  #chunk size
+n = 100  
 filename = 'fares.csv'
-with open(filename) as json_file:
-    # data = json.load(json_file)
-    for n_lines in iter(lambda: tuple(islice(json_file, 1)), ()):
-        first = n_lines
-        break
-
-    for n_lines in iter(lambda: tuple(islice(json_file, n)), ()):
-        process(n_lines)
-        time.sleep(5)
+with open(filename) as json_file: #read initial csv file
+    for n_lines in iter(lambda: tuple(islice(json_file, n)), ()): # split the csv in batches
+        process(n_lines) # Send current batch
+        time.sleep(5) #sleep for 5 s
 
 
         

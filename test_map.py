@@ -1,10 +1,8 @@
 import json
 import functools
 
-def addition(n):
-    return n + n
-
 def getMyData():
+    # Extract pickup_long and pickup_lang
     transformed_data = []
     with open('data.json') as json_file:
         data = json.load(json_file)
@@ -18,8 +16,15 @@ def getMyData():
 
 
 def first_mapper(n):
+
+    #mapper logic, use a random spot in New York and use it to split the city in quarters
     center_long = -73.89936203417709
     center_lat = 40.67686451914928
+
+    # Split logic. dd | aa
+    #              -------
+    #              cc | bb
+
     if float(n['pickup_longitude']) > center_long and float(n['pickup_latitude']) > center_lat:
         return ['aa', 1]
     elif float(n['pickup_longitude']) > center_long and float(n['pickup_latitude']) < center_lat:
@@ -44,6 +49,7 @@ def shuffle(n):
         elif i[0] == "dd":
             d[1].append(1)
     return [a, b, c, d]
+    # Shuffle the mapped data into eg ["aa", [1,1,1]] 
         
 def myReducer(n):
     res = []
@@ -55,13 +61,4 @@ def myReducer(n):
         res.append([i[0], counter])
     return res
 
-# We double all numbers using map()
-numbers = (1, 2, 3, 4)
-result = map(first_mapper, getMyData())
-
-# print(shuffle(list(result)))
-
-
-print(myReducer(shuffle(list(result))))
-# print (functools.reduce(lambda a,b : a+b,list(result)))
-# print(getMyData())
+print(myReducer(shuffle(list(map(first_mapper, getMyData())))))

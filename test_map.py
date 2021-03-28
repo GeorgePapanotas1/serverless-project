@@ -1,5 +1,4 @@
 import json
-import functools
 
 def getMyData():
     # Extract pickup_long and pickup_lang
